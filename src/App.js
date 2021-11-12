@@ -7,41 +7,43 @@ function App() {
   const [wordEntered, setWordEntered] = useState("");
   const [val1, setval1] = useState([])
   const [displayData, setdisplayData] = useState([]);
+  const [name, setname] = useState("");
+
+  const getdata =()=>
+    {
+        const itemvalues=localStorage.getItem("mylist")
+        if(itemvalues)
+            return JSON.parse(itemvalues)
+        else
+            return []
+    }
+
+  const [st, setst] = useState(getdata);
 
   const getStocks= async()=> {
-
+    console.log("hello", name);
     const header = new Headers();
     header.append('User-Agent', 'request');
 
-    axios.get("https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=tesco&apikey=QEOLM41Z6PNYL6YU/", header)
+    axios.get(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${name}&apikey=QEOLM41Z6PNYL6YU/`, header)
    .then((res) => {
 
      var res1 = JSON.parse(JSON.stringify(res.data)).bestMatches
 
      if(res1 && res1.length){
       setval(res1);
-    }
-   })
-  }
 
+    }
+   
+  })
+  console.log(val);
+  }
   const handleFilter = (event) => {
 
     const searchWord = event.target.value;
-    setWordEntered(searchWord);
-
-    const newFilter = val.filter((value) => {
-      var temp1 = JSON.parse(JSON.stringify(value))
-
-      return temp1["2. name"].toLowerCase().includes(searchWord.toLowerCase());
-    });
-
-    if (searchWord === "") {
-      setval1([]);
-
-    } else {
-      setval1(newFilter);
-    }
-  };
+    setname(searchWord);
+    //console.log("hello", searchWord, name);
+  }
 
   const displayDetails = (key) => {
     const stockItem = val.filter((currElem) => {
@@ -53,30 +55,34 @@ function App() {
    
   }
 
+  
+  React.useEffect(() => {
+    localStorage.setItem("My portfolio",JSON.stringify(st))
+}, [st])
   return (
     <div>
-        <button onClick={getStocks()}>Submit</button>
+        <h1>Portfolio</h1>
 
       <center>
 
         <div>
-            <form>
-                <input type="text" placeholder="Search for Stocks" value={wordEntered} onChange= {handleFilter}></input>
             
-                <button >Add</button>
+                <input type="text" placeholder="Search for Stocks"  value={name} onChange= {handleFilter} ></input>
+            
+                <button onClick={ getStocks}  >Submit</button>
 
-            </form>
+         
 
-            {val1.map((curElem)=>{
+            {val.map((curElem)=>{
 
               var temp1 = JSON.parse(JSON.stringify(curElem))
 
               return(
 
-          <div key={temp1["1. symbol"]}>
+          <div key={temp1["1. symbol"]} style ={{"display":"flex","flex-direction":"row", "justify-content": "center" , "align-items" : "center"  }}>
 
-          <button onClick={ () => displayDetails(temp1["1. symbol"]) }>{temp1["2. name"]}</button>
-
+          <h3 onClick={ () => displayDetails(temp1["1. symbol"]) }  style={{"margin": "5px" }}>{temp1["2. name"]}</h3>
+          <button style ={{"margin-left":"20px","height":"20px", "width": "40px" }}>Add</button>
            </div>)})}
 
             
