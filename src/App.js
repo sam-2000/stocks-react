@@ -36,13 +36,13 @@ function App() {
     }
    
   })
-  console.log(val);
+  
   }
   const handleFilter = (event) => {
 
     const searchWord = event.target.value;
     setname(searchWord);
-    //console.log("hello", searchWord, name);
+ 
   }
 
   const displayDetails = (key) => {
